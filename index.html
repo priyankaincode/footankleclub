@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foot & Ankle Club 🦶</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F5F1EC; --surface: #EDE7DF; --card: #FDFAF7;
+    --border: rgba(0,0,0,0.10); --border-strong: rgba(0,0,0,0.20);
+    --text: #1C1814; --text-muted: #6B6258; --text-faint: #A8A098;
+    --accent: #B06A2A; --accent-light: #F7EDE0;
+    --radius: 10px; --radius-lg: 16px;
+    --mono: 'DM Mono', monospace; --sans: 'Syne', sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+  .shell { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+  header { margin-bottom: 2rem; }
+  .brand { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .brand-name { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  .brand-tag { font-family: var(--mono); font-size: 11px; background: var(--accent); color: white; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.05em; }
+  .brand-sub { font-size: 13px; color: var(--text-muted); font-family: var(--mono); }
+  .section-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
+  .members-section { margin-bottom: 1.5rem; }
+  .members-bar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .member-btn { font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 7px 16px; border-radius: 999px; border: 1.5px solid var(--border-strong); background: var(--card); color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+  .member-btn:hover { border-color: var(--text); color: var(--text); }
+  .member-btn.active { color: white; border-color: transparent; }
+  .calendar-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
+  .cal-month-label { font-size: 15px; font-weight: 600; margin-bottom: 1rem; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-day-hdr { font-family: var(--mono); font-size: 10px; color: var(--text-faint); text-align: center; padding: 0 0 6px; letter-spacing: 0.05em; }
+  .cal-day { aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 5px 2px 3px; cursor: pointer; transition: border-color 0.12s, background 0.12s; min-height: 44px; }
+  .cal-day:hover:not(.empty):not(.locked) { border-color: var(--border-strong); background: var(--surface); }
+  .cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+  .cal-day.locked { opacity: 0.35; cursor: not-allowed; }
+  .cal-day.is-today { border-color: var(--accent); }
+  .day-num { font-family: var(--mono); font-size: 11px; color: var(--text-muted); line-height: 1; margin-bottom: 3px; }
+  .cal-day.is-today .day-num { color: var(--accent); font-weight: 500; }
+  .dot-row { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; max-width: 32px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .lb-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1.25rem; }
+  .lb-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
+  .lb-title { font-size: 14px; font-weight: 600; }
+  .lb-prize { font-family: var(--mono); font-size: 11px; color: var(--text-muted); }
+  .lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { font-family: var(--mono); font-size: 12px; color: var(--text-faint); width: 16px; text-align: center; flex-shrink: 0; }
+  .lb-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: white; flex-shrink: 0; }
+  .lb-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .lb-bar-wrap { flex: 2; height: 4px; background: var(--surface); border-radius: 2px; overflow: hidden; }
+  .lb-bar { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+  .lb-days { font-family: var(--mono); font-size: 13px; font-weight: 500; min-width: 28px; text-align: right; }
+  .status-bar { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--text-faint); margin-bottom: 1.25rem; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
+  .status-dot.connected { background: var(--accent); }
+  .status-dot.error { background: #C8501A; }
+  .instruction-strip { background: var(--accent-light); border: 1px solid rgba(176,106,42,0.2); border-radius: var(--radius); padding: 10px 14px; font-family: var(--mono); font-size: 11px; color: var(--accent); line-height: 1.7; margin-bottom: 1.25rem; }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--text); color: var(--bg); font-family: var(--mono); font-size: 12px; padding: 9px 20px; border-radius: 999px; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; white-space: nowrap; z-index: 200; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  @media (max-width: 480px) {
+    .shell { padding: 1.5rem 1rem 3rem; }
+    .brand-name { font-size: 22px; }
+    .cal-day { min-height: 36px; }
+    .dot { width: 5px; height: 5px; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header>
+    <div class="brand">
+      <span class="brand-name">Foot & Ankle Club</span>
+      <span class="brand-tag">OCTOBER 2026</span>
+    </div>
+    <div class="brand-sub">most days = TBD prize 🏆 · consistency over quantity</div>
+  </header>
+
+  <div class="instruction-strip">
+    Pick your name → tap any day from Oct 1 onwards to log your feet & ankle work → everyone's screen updates live
+  </div>
+
+  <div class="members-section">
+    <div class="section-label">Who are you?</div>
+    <div class="members-bar" id="membersBar"></div>
+  </div>
+
+  <div class="calendar-card">
+    <div class="cal-month-label">October 2026</div>
+    <div class="cal-grid" id="calendar"></div>
+  </div>
+
+  <div class="lb-card">
+    <div class="lb-header">
+      <div class="lb-title">Leaderboard</div>
+      <div class="lb-prize">🏆 most days wins</div>
+    </div>
+    <div id="leaderboard"></div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">connecting...</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig =   {
+
+  apiKey: "AIzaSyAQi2JSTxIDVMy-P8reeh8H6mSQyicIHNQ",
+
+  authDomain: "ballet-push-up-club.firebaseapp.com",
+
+  projectId: "ballet-push-up-club",
+
+  storageBucket: "ballet-push-up-club.firebasestorage.app",
+
+  messagingSenderId: "431557270626",
+
+  appId: "1:431557270626:web:d7fa14cff827ac10b4053b"
+
+}
+// ─────────────────────────────────────────────────────────────
+
+const MEMBERS = [
+  { name: 'Priyanka', id: 'm1' },
+  { name: 'Connie',   id: 'm2' },
+  { name: 'Nina',     id: 'm3' },
+  { name: 'Ilana',    id: 'm4' },
+  { name: 'Alice',    id: 'm5' },
+  { name: 'Joanna',   id: 'm6' },
+  { name: 'Natalie',  id: 'm7' },
+  { name: 'Mafe',     id: 'm8' },
+  { name: 'Danielle', id: 'm9' },
+  { name: 'Tatiana',  id: 'm10' },
+];
+
+const COLORS = ['#B06A2A','#4A6FA5','#2D7A5A','#7B4FA0','#C8501A','#4A8B8B'];
+
+const today = new Date();
+const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+const startDate = new Date(2026, 9, 1); // Oct 1
+
+let activeMember = null;
+let logs = {};
+
+function colorFor(idx) { return COLORS[idx % COLORS.length]; }
+function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+function dayKey(d) { return '2026-10-'+String(d).padStart(2,'0'); }
+
+function setStatus(state, msg) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot ' + state;
+  txt.textContent = msg;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ── Firebase ───────────────────────────────────────────────
+let db, docRef;
+try {
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  setStatus('connecting', 'connecting...');
+
+  docRef = doc(db, 'feetclub', 'october2026');
+
+  onSnapshot(docRef, (snap) => {
+    logs = snap.exists() ? (snap.data().logs || {}) : {};
+    renderCalendar();
+    renderLeaderboard();
+    setStatus('connected', 'live · synced');
+  }, (err) => {
+    setStatus('error', 'sync error — try refreshing');
+    console.error(err);
+  });
+
+  window._firestoreReady = true;
+  window._docRef = docRef;
+  window._setDoc = setDoc;
+
+} catch(e) {
+  setStatus('error', 'connection error — try refreshing');
+  console.error('Firebase init error:', e);
+  renderCalendar();
+  renderLeaderboard();
+}
+
+// ── UI ─────────────────────────────────────────────────────
+function renderMembersBar() {
+  const bar = document.getElementById('membersBar');
+  bar.innerHTML = MEMBERS.map((m,i) => {
+    const active = m.id === activeMember;
+    const col = colorFor(i);
+    const style = active ? `background:${col};color:white;border-color:${col};` : '';
+    return `<button class="member-btn${active?' active':''}" style="${style}" onclick="window._setActive('${m.id}')">${m.name}</button>`;
+  }).join('');
+}
+
+window._setActive = function(id) {
+  activeMember = id;
+  renderMembersBar();
+};
+
+window._toggleDay = async function(day) {
+  if (!activeMember) { showToast('Pick your name first!'); return; }
+  const thisDate = new Date(2026, 9, day);
+  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  if (thisDate < startDate || thisDate > compareDate) return;
+
+  const key = dayKey(day);
+  const arr = logs[key] ? [...logs[key]] : [];
+  const idx = arr.indexOf(activeMember);
+  if (idx === -1) arr.push(activeMember);
+  else arr.splice(idx, 1);
+
+  const newLogs = { ...logs, [key]: arr };
+
+  if (window._firestoreReady) {
+    try {
+      await window._setDoc(window._docRef, { logs: newLogs }, { merge: true });
+    } catch(e) {
+      showToast('Save failed — check connection');
+      console.error(e);
+    }
+  } else {
+    logs = newLogs;
+    renderCalendar();
+    renderLeaderboard();
+  }
+};
+
+function renderCalendar() {
+  const cal = document.getElementById('calendar');
+  const dayNames = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = dayNames.map(d=>`<div class="cal-day-hdr">${d}</div>`).join('');
+  const startDow = new Date(2026,9,1).getDay();
+  for (let i=0;i<startDow;i++) html += `<div class="cal-day empty"></div>`;
+  const compareDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  for (let d=1;d<=31;d++) {
+    const key = dayKey(d);
+    const thisDate = new Date(2026,9,d);
+    const isLocked = thisDate < startDate || thisDate > compareDate;
+    const isToday = key === todayStr;
+    const members = logs[key] || [];
+    const dots = members.map(mid => {
+      const idx = MEMBERS.findIndex(m=>m.id===mid);
+      if (idx<0) return '';
+      return `<div class="dot" style="background:${colorFor(idx)}" title="${MEMBERS[idx].name}"></div>`;
+    }).join('');
+    html += `<div class="cal-day${isLocked?' locked':''}${isToday?' is-today':''}" ${isLocked?'':'onclick="window._toggleDay('+d+')"'}>
+      <div class="day-num">${d}</div>
+      <div class="dot-row">${dots}</div>
+    </div>`;
+  }
+  cal.innerHTML = html;
+}
+
+function renderLeaderboard() {
+  const lb = document.getElementById('leaderboard');
+  const counts = MEMBERS.map((m,i) => {
+    let count = 0;
+    Object.values(logs).forEach(arr => { if (arr.includes(m.id)) count++; });
+    return { m, i, count };
+  }).sort((a,b) => b.count - a.count);
+  const max = Math.max(...counts.map(c=>c.count), 1);
+  lb.innerHTML = counts.map((c, rank) => {
+    const pct = Math.round((c.count/max)*100);
+    const isLeader = rank===0 && c.count>0;
+    return `<div class="lb-row">
+      <div class="lb-rank">${isLeader?'🏆':rank+1}</div>
+      <div class="lb-avatar" style="background:${colorFor(c.i)}">${initials(c.m.name)}</div>
+      <div class="lb-name">${c.m.name}</div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${pct}%;background:${colorFor(c.i)}"></div></div>
+      <div class="lb-days">${c.count}</div>
+    </div>`;
+  }).join('');
+}
+
+renderMembersBar();
+renderCalendar();
+renderLeaderboard();
+</script>
+</body>
+</html>
